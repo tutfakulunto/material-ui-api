@@ -1,0 +1,13 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prestart": "yarn install",
+    "start": "node app"
+  },
+  "dependencies": {
+    "nodemon": "^1.14.8"
+  }
+}
