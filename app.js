@@ -7,7 +7,7 @@ app.get('/', (req, res) => res.send('Hello World!'))
 app.listen(3000, () => console.log('Example app listening on port!'))
 
 /* GET route for /languages */
-router.get('/languages', (req, res, next) => {
+router.get('/', (req, res) => {
     let languages = [
         {
             "id": 1,
@@ -55,3 +55,4 @@ router.get('/languages', (req, res, next) => {
     ];
     res.status(200).json({ languages });
 });
+app.use('/languages', router);
