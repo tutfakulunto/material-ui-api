@@ -4,9 +4,14 @@ const app = express();
 const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+require('./src/services/passport');
+const keys = require('./config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
+var {languages} = require('./src/models/languages')
 
 app.use(cors())
 
@@ -20,6 +25,15 @@ router.get('/', (req, res) => {
 app.use('/languages', router);
 
 app.use(bodyParser.json());
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.cookieKey]
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use((req, res, next) => {
   var now = new Date().toString();
   var log = `${now}: ${req.method} ${req.url}`;
@@ -29,4 +43,5 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(3000, () => console.log('Example app listening on port!'));
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log('Example app listening on port!'));
