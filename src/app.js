@@ -4,9 +4,12 @@ const app = express();
 const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const passport = require('passport');
 
 const {MongoClient, ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
+
+passport.use(new GoogleStrategy());
 
 app.use(cors())
 
