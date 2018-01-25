@@ -4,8 +4,6 @@ var Language = mongoose.model('Language', {
     name: {
         type: String,
         required: true,
-        minlength: 2,
-        maxlength: 2,
         trim: true
     },
     abbreviation: {
@@ -23,28 +21,19 @@ var Language = mongoose.model('Language', {
     description: {
         type: String,
         required: true,
-        minlength: 32,
-        maxlength: 255,
         trim: true
     },
     createdAt: {
-        type: Date
-    }
+        type: Date,
+        default: Date.now
+    },
     updatedAt: {
-        type: Date
+        type: Date,
+        default: Date.now
     }
 });
 
-var amharic = new Language({
-    name: 'Amharic',
-    abbreviation: 'am',
-    family: 'semitic',
-    description: 'A language spoken in Ethiopia',
-    createdAt: '2018-01-13T01:24:18.019Z',
-    updatedAt: '2018-01-13T01:24:18.019Z'
-})
-
-module.exports = {Languages};
+module.exports = {Language};
 
 // [
 //     {
