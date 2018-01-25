@@ -6,12 +6,12 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
-require('./src/services/passport');
-const keys = require('./config/keys');
+// require('./src/services/passport');
+// const keys = require('./config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
-var {languages} = require('./src/models/languages')
+// var {languages} = require('./src/models/languages')
 
 app.use(cors())
 
@@ -25,14 +25,16 @@ router.get('/', (req, res) => {
 app.use('/languages', router);
 
 app.use(bodyParser.json());
-app.use(
-  cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [keys.cookieKey]
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(
+//   cookieSession({
+//     maxAge: 30 * 24 * 60 * 60 * 1000,
+//     keys: [keys.cookieKey]
+//   })
+// );
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+// require('./routes/authRoutes')(app);
 
 app.use((req, res, next) => {
   var now = new Date().toString();
