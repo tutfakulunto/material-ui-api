@@ -10,8 +10,9 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const keys = require('../config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
-var {mongoose} = require('./db/mongoose');
-var {languages} = require('../src/models/languages')
+const {mongoose} = require('./db/mongoose');
+const {languages} = require('../src/models/languages');
+const {user} = require('../src/models/user');
 
 app.use(cors())
 
