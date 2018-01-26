@@ -5,7 +5,6 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const cookieSession = require('cookie-session');
-const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const keys = require('../config/keys');
 
@@ -13,6 +12,8 @@ const {MongoClient, ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 const {languages} = require('../src/models/languages');
 const {user} = require('../src/models/user');
+
+const passport = require('passport');
 
 app.use(cors())
 
@@ -22,9 +23,7 @@ passport.use(
         clientSecret: keys.googleClientSecret,
         callbackURL: '/auth/google/callback'
     }, (accessToken, refreshToken, profile, done) => {
-        console.log('access token', accessToken);
-        console.log('refresh token', refreshToken);
-        console.log('profile', profile);
+        new User({googleID: profile.id}).save();
     })
 );
 
