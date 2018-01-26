@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
+const schemaOptions = {timestamps: true};
 const languageSchema = new Schema({
    name: {
        type: String,
@@ -23,15 +24,7 @@ const languageSchema = new Schema({
        type: String,
        required: true,
        trim: true
-   },
-   createdAt: {
-       type: Date,
-       default: Date.now
-   },
-   updatedAt: {
-       type: Date,
-       default: Date.now
    }
-});
+}, schemaOptions);
 
 module.exports = mongoose.model('Language', languageSchema);

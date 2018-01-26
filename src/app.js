@@ -10,22 +10,47 @@ const keys = require('../config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
-const {languages} = require('../src/models/languages');
-const {user} = require('../src/models/user');
+mongoose.connect(keys.mongoURI);
+const Languages = require('./models/language');
+const User = require('./models/user');
 
 const passport = require('passport');
 
 app.use(cors())
 
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id).then(user => {
+    done(null, user);
+  });
+});
+
 passport.use(
-    new GoogleStrategy({
-        clientID: keys.googleClientID,
-        clientSecret: keys.googleClientSecret,
-        callbackURL: '/auth/google/callback'
-    }, (accessToken, refreshToken, profile, done) => {
-        new User({googleID: profile.id}).save();
-    })
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: '/auth/google/callback',
+      proxy: true
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({googleId: profile.id});
+
+      if (existingUser) {
+        return done(null, existingUser);
+      }
+
+      const user = await new User({googleId: profile.id}).save();
+      done(null, user);
+    }
+  )
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get(
     '/auth/google',
@@ -52,8 +77,6 @@ app.use(
     keys: [keys.cookieKey]
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use((req, res, next) => {
   var now = new Date().toString();
