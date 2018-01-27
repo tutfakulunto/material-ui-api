@@ -5,61 +5,30 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const cookieSession = require('cookie-session');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const keys = require('../config/keys');
+const passport = require('passport');
+const keys = require('./config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 mongoose.connect(keys.mongoURI);
 const Languages = require('./models/language');
 const User = require('./models/user');
-
-const passport = require('passport');
+require('./services/passport');
 
 app.use(cors())
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findById(id).then(user => {
-    done(null, user);
-  });
-});
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: keys.googleClientID,
-      clientSecret: keys.googleClientSecret,
-      callbackURL: '/auth/google/callback',
-      proxy: true
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const existingUser = await User.findOne({googleId: profile.id});
-
-      if (existingUser) {
-        return done(null, existingUser);
-      }
-
-      const user = await new User({googleId: profile.id}).save();
-      done(null, user);
-    }
-  )
+app.use(bodyParser.json());
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.cookieKey]
+  })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get(
-    '/auth/google',
-    passport.authenticate('google', {
-        scope: ['profile', 'email']
-    })
-);
-
-app.get('/auth/google/callback', passport.authenticate('google'));
+require('./routes/authRoutes')(app);
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
@@ -69,14 +38,6 @@ router.get('/', (req, res) => {
     res.status(200).json({data: languages});
 });
 app.use('/languages', router);
-
-app.use(bodyParser.json());
-app.use(
-  cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [keys.cookieKey]
-  })
-);
 
 app.use((req, res, next) => {
   var now = new Date().toString();
