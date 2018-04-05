@@ -34,7 +34,7 @@ app.get('/', (req, res) => res.send('Hello World!'));
 
 /* GET route for /languages */
 router.get('/', (req, res) => {
-    const languages = require('./src/models/languages');
+    const languages = require('./models/language');
     res.status(200).json({data: languages});
 });
 app.use('/languages', router);
