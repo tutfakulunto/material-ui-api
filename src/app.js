@@ -1,22 +1,21 @@
 const express = require('express');
 var cors = require('cors')
 const app = express();
-const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const keys = require('./config/keys');
-
+const mongoose = require('mongoose');
 const {MongoClient, ObjectID} = require('mongodb');
-const {mongoose} = require('./db/mongoose');
-mongoose.connect(keys.mongoURI);
-const Languages = require('./models/language');
+const Language = require('./models/language');
 const User = require('./models/user');
+
 require('./services/passport');
 
-app.use(cors())
+mongoose.connect(keys.mongoURI);
 
+app.use(cors())
 app.use(bodyParser.json());
 app.use(
   cookieSession({
@@ -32,12 +31,11 @@ require('./routes/authRoutes')(app);
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
-/* GET route for /languages */
-router.get('/', (req, res) => {
-    const languages = require('./models/language');
-    res.status(200).json({data: languages});
+app.get('/languages', (req, res) => {
+  Language.find({})
+      .then(languages => res.status(200).json(languages))
+      .catch(error => res.status(500).end());
 });
-app.use('/languages', router);
 
 app.use((req, res, next) => {
   var now = new Date().toString();
