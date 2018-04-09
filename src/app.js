@@ -6,17 +6,19 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
+const mongoose = require('mongoose');
 const keys = require('./config/keys');
 
 const {MongoClient, ObjectID} = require('mongodb');
-const {mongoose} = require('./db/mongoose');
-mongoose.connect(keys.mongoURI);
 const Languages = require('./models/language');
 const User = require('./models/user');
+
 require('./services/passport');
 
-app.use(cors())
+mongoose.Promise = global.Promise;
+mongoose.connect(keys.mongoURI);
 
+app.use(cors())
 app.use(bodyParser.json());
 app.use(
   cookieSession({
